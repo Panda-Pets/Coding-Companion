@@ -1,4 +1,3 @@
-/* eslint-disable */
 const db = require('../models/dbModel');
 const { post } = require('../server');
 
@@ -12,11 +11,11 @@ gameController.load = async (req, res, next) => {
     const backgroundResponse = await db.query('SELECT * FROM background');
     //assigns the initialLoad.backgrounds to be the evaluated result of the query for backgrounds
     res.locals.initialLoad.backgrounds = backgroundResponse.rows;
-    //todo: swap the toys and food
+    //TODO: swap the toys and food
     const toyResponse = await db.query('SELECT * FROM food');
-    res.locals.initialLoad.toys = toyResponse.rows;
+    res.locals.initialLoad.food = toyResponse.rows;
     const foodResponse = await db.query('SELECT * FROM toys');
-    res.locals.initialLoad.food = foodResponse.rows;
+    res.locals.initialLoad.toys = foodResponse.rows;
     const petResponse = await db.query('SELECT * FROM pet_type');
     res.locals.initialLoad.pets = petResponse.rows;
     return next();
@@ -24,16 +23,18 @@ gameController.load = async (req, res, next) => {
     console.log(error);
     const err = {
       log: 'gameController.load',
-      message: 'check log for error',
+      message: error,
     };
     next(err);
   }
 };
 
 gameController.populateInventory = async (req, res, next) => {
-  sqlStringPetReq = `SELECT u.user_id, p.* FROM users u INNER JOIN unique_pets p ON p.user_id = u.user_id WHERE u.user_id = ${req.params.id}`;
-  sqlStringItemReq = `SELECT u.user_id, i.* FROM users u INNER JOIN unique_items i ON i.user_id = u.user_id WHERE u.user_id = ${req.params.id}`;
+  const sqlStringPetReq = 'SELECT u.user_id, p.* FROM users u INNER JOIN unique_pets p ON p.user_id = u.user_id WHERE u.user_id = $1';
+  const sqlStringItemReq = 'SELECT u.user_id, i.* FROM users u INNER JOIN unique_items i ON i.user_id = u.user_id WHERE u.user_id = $1';
+  const values = [req.params.id];
   //default inventory as empty arrays
+  //TODO: populate default inventory on signup
   res.locals.populatedInventory = {
     food: [],
     toys: [],
@@ -42,12 +43,13 @@ gameController.populateInventory = async (req, res, next) => {
   };
   try {
     //userPets is assigned the result of the query sqlStringPetReq and that will be pushed into the pets array
-    const userPets = await db.query(sqlStringPetReq);
+    const userPets = await db.query(sqlStringPetReq, values);
+
     res.locals.populatedInventory.pets.push(...userPets.rows);
 
     //userInventory is assigned the result of the query sqlStringItemReq and that will be destructured via a forEach method
     //inside the forEach method, we are pushing each object into their respective array based on type
-    const userInventory = await db.query(sqlStringItemReq);
+    const userInventory = await db.query(sqlStringItemReq, values);
     userInventory.rows.forEach((element) => {
       if (element.type === 'food') res.locals.populatedInventory.food.push(element);
       if (element.type === 'toy') res.locals.populatedInventory.toys.push(element);
@@ -59,7 +61,7 @@ gameController.populateInventory = async (req, res, next) => {
     console.log(error);
     const err = {
       log: 'gameController.populateInventory',
-      message: 'check log for error',
+      message: error,
     };
     next(err);
   }
@@ -101,13 +103,12 @@ gameController.addInventory = async (req, res, next) => {
 
   try {
     // update user currency
-    //todo: modify sql query strings to not include req.params and instead place them in the values
-    sqlStringUpdateCurrency = `UPDATE users SET currency=$1 WHERE user_id=${req.params.id}`;
-    const currencyVal = [req.body.currencyVal];
-    const updatedCurrency = await db.query(sqlStringUpdateCurrency, currencyVal);
+    const sqlStringUpdateCurrency = 'UPDATE users SET currency=$1 WHERE user_id = $2';
+    const values = [req.body.currencyVal, req.params.id];
+    const updatedCurrency = await db.query(sqlStringUpdateCurrency, values);
 
     // insert unique item
-    sqlStringAddInventory = `INSERT INTO unique_items (cost, toy_stat, food_stat, type, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)`;
+    const sqlStringAddInventory = 'INSERT INTO unique_items (cost, toy_stat, food_stat, type, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)';
     const itemVals = Object.values(postConstructor);
     console.log('item vals: ', itemVals);
     const addedItem = await db.query(sqlStringAddInventory, itemVals);
@@ -118,7 +119,7 @@ gameController.addInventory = async (req, res, next) => {
     console.log(error);
     const err = {
       log: 'gameController.populateInventory',
-      message: 'check log for error',
+      message: error,
     };
     console.error(error);
     next(err);
