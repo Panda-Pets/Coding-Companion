@@ -1,4 +1,4 @@
-/* eslint-disable */
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -35,7 +35,7 @@ app.get('/styles.css', (req, res) => {
 app.use('/user', userRouter);
 
 // process form inputs
-app.use('/*', (req, res) => res.status(404).send("This is not the page you're looking for..."));
+app.use('/*', (req, res) => res.status(404).send('This is not the page you\'re looking for...'));
 
 //Express global error handler
 app.use((err, req, res, next) => {
