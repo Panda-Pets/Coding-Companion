@@ -2,118 +2,124 @@
 const db = require('../models/dbModel');
 const { post } = require('../server');
 
-
-
 const gameController = {};
 
 gameController.load = async (req, res, next) => {
-  res.locals.initialLoad = {}
-try {
-  const backgroundResponse = await db.query('SELECT * FROM background')
-  res.locals.initialLoad.backgrounds = backgroundResponse.rows;
-  const toyResponse = await db.query('SELECT * FROM food')
-  res.locals.initialLoad.toys = toyResponse.rows;
-  const foodResponse = await db.query('SELECT * FROM toys')
-  res.locals.initialLoad.food = foodResponse.rows;
-  const petResponse = await db.query('SELECT * FROM pet_type')
-  res.locals.initialLoad.pets = petResponse.rows;
-  return next();
+  //initializes the initialLoad to an empty object
+  res.locals.initialLoad = {};
+  try {
+    //looks for all the backgrounds from the background table
+    const backgroundResponse = await db.query('SELECT * FROM background');
+    //assigns the initialLoad.backgrounds to be the evaluated result of the query for backgrounds
+    res.locals.initialLoad.backgrounds = backgroundResponse.rows;
+    //todo: swap the toys and food
+    const toyResponse = await db.query('SELECT * FROM food');
+    res.locals.initialLoad.toys = toyResponse.rows;
+    const foodResponse = await db.query('SELECT * FROM toys');
+    res.locals.initialLoad.food = foodResponse.rows;
+    const petResponse = await db.query('SELECT * FROM pet_type');
+    res.locals.initialLoad.pets = petResponse.rows;
+    return next();
   } catch (error) {
     console.log(error);
     const err = {
       log: 'gameController.load',
-      message: 'check log for error'
-    }
+      message: 'check log for error',
+    };
     next(err);
   }
 };
 
 gameController.populateInventory = async (req, res, next) => {
   sqlStringPetReq = `SELECT u.user_id, p.* FROM users u INNER JOIN unique_pets p ON p.user_id = u.user_id WHERE u.user_id = ${req.params.id}`;
-  sqlStringItemReq = `SELECT u.user_id, i.* FROM users u INNER JOIN unique_items i ON i.user_id = u.user_id WHERE u.user_id = ${req.params.id}`
+  sqlStringItemReq = `SELECT u.user_id, i.* FROM users u INNER JOIN unique_items i ON i.user_id = u.user_id WHERE u.user_id = ${req.params.id}`;
+  //default inventory as empty arrays
   res.locals.populatedInventory = {
     food: [],
     toys: [],
     pets: [],
-    background: []
-  }
-try {
-  const userPets = await db.query(sqlStringPetReq)
-  res.locals.populatedInventory.pets.push(...userPets.rows);
-  const userInventory = await db.query(sqlStringItemReq);
-  userInventory.rows.forEach((element) => {
-    if (element.type === 'food') res.locals.populatedInventory.food.push(element);
-    if (element.type === 'toy') res.locals.populatedInventory.toys.push(element);
-    if (element.type === 'background') res.locals.populatedInventory.background.push(element);
-  })
-  return next();
+    background: [],
+  };
+  try {
+    //userPets is assigned the result of the query sqlStringPetReq and that will be pushed into the pets array
+    const userPets = await db.query(sqlStringPetReq);
+    res.locals.populatedInventory.pets.push(...userPets.rows);
+
+    //userInventory is assigned the result of the query sqlStringItemReq and that will be destructured via a forEach method
+    //inside the forEach method, we are pushing each object into their respective array based on type
+    const userInventory = await db.query(sqlStringItemReq);
+    userInventory.rows.forEach((element) => {
+      if (element.type === 'food') res.locals.populatedInventory.food.push(element);
+      if (element.type === 'toy') res.locals.populatedInventory.toys.push(element);
+      if (element.type === 'background') res.locals.populatedInventory.background.push(element);
+    });
+
+    return next();
   } catch (error) {
     console.log(error);
     const err = {
       log: 'gameController.populateInventory',
-      message: 'check log for error'
-    }
+      message: 'check log for error',
+    };
     next(err);
   }
 };
 
 gameController.addInventory = async (req, res, next) => {
+  let postConstructor = {};
 
-  let postConstructor = {}
+  console.log('req.body: ', req.body);
 
-  console.log('req.body: ', req.body)
-
-  if(req.body.type === 'food') {
+  if (req.body.type === 'food') {
     postConstructor = {
       cost: req.body.cost,
       toy_stat: 0,
       food_stat: req.body.food_stat,
-      type:'food',
+      type: 'food',
       file_id: req.body.file_id,
-      user_id: req.params.id
-    }
-  } else if(req.body.type === 'background') {
+      user_id: req.params.id,
+    };
+  } else if (req.body.type === 'background') {
     postConstructor = {
       cost: req.body.cost,
       toy_stat: 0,
       food_stat: 0,
       type: 'background',
       file_id: req.body.file_id,
-      user_id: req.params.id
-    } 
-  } else if(req.body.type === 'toy') {
+      user_id: req.params.id,
+    };
+  } else if (req.body.type === 'toy') {
     postConstructor = {
       cost: req.body.cost,
       toy_stat: req.body.toy_stat,
       food_stat: 0,
       type: 'toy',
       file_id: req.body.file_id,
-      user_id: req.params.id
-    }
+      user_id: req.params.id,
+    };
   }
-  
-  
-try {
 
-  // update user currency
-  sqlStringUpdateCurrency = `UPDATE users SET currency=$1 WHERE user_id=${req.params.id}`;
-  const currencyVal = [req.body.currencyVal];
-  const updatedCurrency = await db.query(sqlStringUpdateCurrency, currencyVal);
+  try {
+    // update user currency
+    //todo: modify sql query strings to not include req.params and instead place them in the values
+    sqlStringUpdateCurrency = `UPDATE users SET currency=$1 WHERE user_id=${req.params.id}`;
+    const currencyVal = [req.body.currencyVal];
+    const updatedCurrency = await db.query(sqlStringUpdateCurrency, currencyVal);
 
-  // insert unique item
-  sqlStringAddInventory = `INSERT INTO unique_items (cost, toy_stat, food_stat, type, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)`
-  const itemVals = Object.values(postConstructor);
-  console.log('item vals: ', itemVals)
-  const addedItem = await db.query(sqlStringAddInventory, itemVals)
-  res.locals.addedItem = [updatedCurrency, addedItem];
+    // insert unique item
+    sqlStringAddInventory = `INSERT INTO unique_items (cost, toy_stat, food_stat, type, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)`;
+    const itemVals = Object.values(postConstructor);
+    console.log('item vals: ', itemVals);
+    const addedItem = await db.query(sqlStringAddInventory, itemVals);
+    res.locals.addedItem = [updatedCurrency, addedItem];
 
-  return next();
+    return next();
   } catch (error) {
     console.log(error);
     const err = {
       log: 'gameController.populateInventory',
-      message: 'check log for error'
-    }
+      message: 'check log for error',
+    };
     console.error(error);
     next(err);
   }
