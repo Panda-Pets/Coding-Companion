@@ -63,6 +63,8 @@ function MainContainer(props) {
             userInventory={userInventory}
           />
           <Pet userInventory={userInventory} />
+          {/* <Pet userInventory={userInventory} /> */}
+          
         </Fragment>
       ) : (
         <LoginWrapper setUserInfo={setUserInfo} setLoggedIn={setIsLoggedIn} />
