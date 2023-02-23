@@ -11,7 +11,7 @@ const toys = require.context('../../assets/images/toys', false, /\.(png|jpe?g|sv
 
 
 function Store(props) {
-  const { name, userInfo, storeItems } = props;
+  const { name, setUserInfo, userInfo, storeItems, setUserInventory, userInventory, setUserCurrency } = props;
   // const petArr = [cat, dog, trex];
   // const petStringArr = ['Cat', 'Dog', 'T-Rex'];
   // console.log(userInfo);
@@ -23,7 +23,6 @@ function Store(props) {
 	
 	food purchase if failing 
 	 */
-  console.log('store props:', props);
 
   //event handler for when an item is purchased
   //async function definition is declared
@@ -38,27 +37,29 @@ function Store(props) {
     console.log('purchasedItem ',purchasedItem);
     async function purchaseFoodOrToy() {
       const response = await fetch(`/inventory/${userInfo.user_id}`, 
-        {method : 'POST',           
+        {method : 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(purchasedItem) });
       const confirmedPurchase = await response.json();
       console.log('confirmed purchase: ', confirmedPurchase);
-      props.setUserCurrency(purchasedItem.currencyVal);
+      setUserCurrency(purchasedItem.currencyVal);
     }
 
     async function purchasePet() {
-      console.log('PURCHASE PET');
+      console.log('PURCHASE PET: ', purchasedItem);
       const response = await fetch('/user/adoptAPet', 
         {method : 'POST',           
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(purchasedItem) });
       const confirmedPurchase = await response.json();
+      setUserInventory({...userInventory, pets: [...userInventory.pets, confirmedPurchase.newPet]});
       console.log('confirmed purchase: ', confirmedPurchase);
-      props.setUserCurrency(purchasedItem.currencyVal);
+      setUserCurrency(confirmedPurchase.currency);
     }
     try{
       if(purchasedItem.type === 'pet') purchasePet();
       else purchaseFoodOrToy();
+
     } catch (error) {
       console.error(error);
     }

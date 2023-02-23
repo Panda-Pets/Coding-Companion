@@ -6,33 +6,35 @@ import CreatePet from './CreatePet';
 import '../styles/LoginWrapper.css';
 
 function LoginWrapper (props) {
+  const { setUserInfo, setLoggedIn, setUserPet, userInfo } = props;
   // const [userIsLoggingIn, setUserIsLoggingIn] = useState(true);
   const [createPetOnSignUp, setCreatePetOnSignUp] = useState(false);
   const [loginState, setLoginState] = useState('Login');
-
+  
   let singleRender;
   
   switch (loginState) {
     case 'Login':
       singleRender = <Login 
-      setUserInfo={props.setUserInfo} 
-      setLoggedIn={props.setLoggedIn}
-      setUserPet={props.setUserPet}
+      setUserInfo={setUserInfo} 
+      setLoggedIn={setLoggedIn}
+      setUserPet={setUserPet}
       setLoginState={setLoginState}  
       />;
       break;
   
     case 'Signup':
       singleRender = <Signup 
-      setLoggedIn={props.setLoggedIn} 
-      setUserInfo={props.setUserInfo} 
+      setLoggedIn={setLoggedIn} 
+      setUserInfo={setUserInfo} 
       setLoginState={setLoginState}    
       />
       break;
   
     case 'CreatePet':
       singleRender = <CreatePet 
-        UserInfo={props.UserInfo}
+        setUserPet={setUserPet}
+        userInfo={userInfo}
       />;
       break;
     }

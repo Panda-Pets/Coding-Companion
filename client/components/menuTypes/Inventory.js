@@ -77,6 +77,7 @@ function Inventory(props) {
     trex: Trex,
   };
   // console.log(inventory.pets);
+
   console.log('inventory.pets: ', inventory.pets);
   const petItems = inventory.pets.map((pet, index) => {
     const petName = pet.file_id;

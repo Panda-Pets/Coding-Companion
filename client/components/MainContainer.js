@@ -35,9 +35,11 @@ function MainContainer(props) {
         //change state relating to user inventory
         setUserInventory(inventory);
         // populate petsShowing, initially all true
-        const pets = {};
-        inventory.pets.forEach((pet) => (pets[pet.unique_pet_id] = true));
-        setPetsShowing(pets);
+        if(petsShowing === null){
+          const pets = {};
+          inventory.pets.forEach((pet) => (pets[pet.unique_pet_id] = true));
+          setPetsShowing(pets);
+        }
       }
       //try and catch block - invoke async func above
       try {
@@ -51,7 +53,6 @@ function MainContainer(props) {
 
   //takes in the UI click event
   const handleMenuClick = (event) => {
-    console.log('clicked in main container', event.target.id);
     //if the clicked menu is already open, then close
     if (event.target.id === popupToRender) {
       setPopupToRender('Nothing');
@@ -62,11 +63,8 @@ function MainContainer(props) {
   };
 
   const handleMenuPetClick = (pet_id) => {
-    console.log('Pet_id: ', pet_id);
     setPetsShowing({ ...petsShowing, [pet_id]: !petsShowing[pet_id] });
   };
-
-  console.log('USER INVENTORY:', userInventory);
 
   return (
     <div className="mainContainer">
@@ -77,6 +75,8 @@ function MainContainer(props) {
             userInfo={userInfo}
             popupToRender={popupToRender}
             userInventory={userInventory}
+            setUserInfo={setUserInfo}
+            setUserInventory={setUserInventory}
             handleMenuPetClick={handleMenuPetClick}
           />
           {userInventory.pets.map((pet) => (
@@ -88,6 +88,7 @@ function MainContainer(props) {
           setUserInfo={setUserInfo}
           setLoggedIn={setIsLoggedIn}
           setUserPet={setUserPet}
+          userInfo={userInfo}
         />
       )}
     </div>

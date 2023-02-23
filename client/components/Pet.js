@@ -10,7 +10,7 @@ import walkingTrex from '../assets/images/pets/trex/trex_walking.gif';
 function Pet({ pet, visible }) {
   // set initial x and y positions to random positions on board
   const [petXPosition, setPetXPosition] = useState(Math.floor(Math.random() * 91));
-  const [petYPosition, setPetYPosition] = useState(Math.floor(Math.random() * 48) + 36);
+  const [petYPosition, setPetYPosition] = useState(Math.floor(Math.random() * 39) + 36);
   const [petScale, setPetScale] = useState(100);
   const [petMoveState, setPetMoveState] = useState(false);
   const [flipPet, setFlipPet] = useState(false);
@@ -45,22 +45,22 @@ function Pet({ pet, visible }) {
     //control pet position with arrow keys
     const handleKeyDown = (event) => {
       switch (event.key) {
-        case 'ArrowUp':
-          if (petYPosition > 35) setPetYPosition(petYPosition - 1);
-          break;
-        case 'ArrowDown':
-          if (petYPosition < 84) setPetYPosition(petYPosition + 1);
-          break;
-        case 'ArrowRight':
-          if (petXPosition < 90) setPetXPosition(petXPosition + 1);
-          break;
-        case 'ArrowLeft':
-          if (petXPosition > 0) setPetXPosition(petXPosition - 1);
-          setFlipPet(true);
-          break;
+      case 'ArrowUp':
+        if (petYPosition > 35) setPetYPosition(petYPosition - 1);
+        break;
+      case 'ArrowDown':
+        if (petYPosition < 75) setPetYPosition(petYPosition + 1);
+        break;
+      case 'ArrowRight':
+        if (petXPosition < 90) setPetXPosition(petXPosition + 1);
+        break;
+      case 'ArrowLeft':
+        if (petXPosition > 0) setPetXPosition(petXPosition - 1);
+        setFlipPet(true);
+        break;
 
-        default:
-          break;
+      default:
+        break;
       }
 
       //scale pet size based on change in position

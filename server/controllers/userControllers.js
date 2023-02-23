@@ -127,35 +127,34 @@ userController.gainCurrency = async (req, res, next) => {
 
 // this middleware adds new pet to the database
 userController.createPet = async (req, res, next) => {
-  console.log('has run');
-  const { petBreed, petName, user_id, firstPet, cost} = req.body;
+  console.log('req.body: ',req.body);
+  const { petBreed, petName, user_id, firstPet} = req.body;
   let updatedCurrency;
   const size = Math.floor(Math.random() * 20) + 20;
   const happiness = Math.floor(Math.random() * 10) + 90;
   const age = Math.floor(Math.random() * 9) + 1;
   // const cost = 50;
-  const queryString = 'INSERT INTO unique_pets(name, size, happiness, age, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)';
+  const queryString = 'INSERT INTO unique_pets(name, size, happiness, age, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
   const values = [petName, size, happiness, age, petBreed, user_id];
   try {
     if(firstPet === false) {
-      // CORRECT:
       //grab current currency in database
       const queryStrCurrency = 'SELECT currency FROM users WHERE user_id = $1';
       const values2 = [user_id];
       const data = await db.query(queryStrCurrency, values2);
       let currentCurrency = data.rows[0].currency;
       //subtract that from cost of item
-      currentCurrency -= cost;
+      currentCurrency -= req.body.cost;
 
       //update currency in database
-      const sqlStringUpdateCurrency = 'UPDATE users SET currency=$1 WHERE user_id = $2';
+      const sqlStringUpdateCurrency = 'UPDATE users SET currency=$1 WHERE user_id = $2 RETURNING users.currency';
       const values3 = [currentCurrency, user_id];
       updatedCurrency = await db.query(sqlStringUpdateCurrency, values3);
       console.log('updatedCurrency: ', updatedCurrency);
     }
     const addedItem = await db.query(queryString, values);
     console.log('addedItem: ', addedItem);
-    res.locals.addedItem = [updatedCurrency, addedItem];
+    res.locals.addedItem = {currency: updatedCurrency.rows[0].currency, newPet: addedItem.rows[0]};
     return next();
   } catch(err) {
     return next({

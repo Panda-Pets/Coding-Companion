@@ -11,9 +11,8 @@ import Store from '../components/menuTypes/Store.js';
 
 function PopupDisplayWrapper(props) {
   let singleRender;
-
-  const { popupToRender, userInfo, userInventory, handleMenuPetClick } = props;
-  console.log('rendered in display wrapper', popupToRender);
+  const { popupToRender, userInfo, setUserInfo, userInventory, setUserInventory, handleMenuPetClick } = props;
+  console.log('USERINVENTORY: ',userInventory);
   console.log('userInfo: ', userInfo);
 
   const [storeInventory, setStoreInventory] = useState(null);
@@ -38,41 +37,44 @@ function PopupDisplayWrapper(props) {
   // const [currentDisplay, setCurrentDisplay] = useState(popupToRender);
   //controls which popup menu is displayed when the corresponding button is clicked
   switch (popupToRender) {
-    case 'Nothing':
-      singleRender = false;
-      break;
+  case 'Nothing':
+    singleRender = false;
+    break;
 
-    case 'Inventory':
-      singleRender = (
-        <Inventory
-          name="Inventory"
-          inventory={userInventory}
-          handleMenuPetClick={handleMenuPetClick}
-        />
-      );
-      break;
+  case 'Inventory':
+    singleRender = (
+      <Inventory
+        name="Inventory"
+        inventory={userInventory}
+        handleMenuPetClick={handleMenuPetClick}
+      />
+    );
+    break;
 
-    case 'Algos':
-      singleRender = <Algos name="Algos" userInfo={userInfo.currentUser} />;
-      break;
+  case 'Algos':
+    singleRender = <Algos name="Algos" userInfo={userInfo.currentUser} />;
+    break;
 
-    case 'Store':
-      singleRender = (
-        <Store
-          name="Store"
-          storeItems={storeInventory}
-          userInfo={props.userInfo.currentUser}
-          setUserCurrency={setUserCurrency}
-        />
-      );
-      break;
+  case 'Store':
+    singleRender = (
+      <Store
+        name="Store"
+        storeItems={storeInventory}
+        userInfo={props.userInfo.currentUser}
+        setUserInfo={setUserInfo}
+        userInventory={userInventory}
+        setUserInventory={setUserInventory}
+        setUserCurrency={setUserCurrency}
+      />
+    );
+    break;
 
-    case 'Pet Stats':
-      singleRender = <PetStats name="Pet Stats" userInventory={userInventory} />;
-      break;
+  case 'Pet Stats':
+    singleRender = <PetStats name="Pet Stats" userInventory={userInventory} />;
+    break;
 
-    default:
-      singleRender = false;
+  default:
+    singleRender = false;
   }
   return (
     <div className={`popupDisplayWrapper ${singleRender ? 'visible' : ''}`}>
