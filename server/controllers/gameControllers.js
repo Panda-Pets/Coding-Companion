@@ -102,11 +102,18 @@ gameController.addInventory = async (req, res, next) => {
   }
 
   try {
+    //grab current currency in database
+    console.log('req.params.id: ',req.params.id);
+    const queryStrCurrency = 'SELECT currency FROM users WHERE user_id = $1';
+    const values2 = [req.params.id];
+    const data = await db.query(queryStrCurrency, values2);
+    let currentCurrency = data.rows[0].currency;
+    currentCurrency -= req.body.cost;
     // update user currency
     const sqlStringUpdateCurrency = 'UPDATE users SET currency=$1 WHERE user_id = $2';
-    const values = [req.body.currencyVal, req.params.id];
+    const values = [currentCurrency, req.params.id];
     const updatedCurrency = await db.query(sqlStringUpdateCurrency, values);
-
+    console.log('updatedCurrency: ', updatedCurrency);
     // insert unique item
     const sqlStringAddInventory = 'INSERT INTO unique_items (cost, toy_stat, food_stat, type, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)';
     const itemVals = Object.values(postConstructor);

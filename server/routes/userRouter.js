@@ -21,7 +21,7 @@ router.post('/signup', userController.signup, leetcodeController.getUpdatedStats
 });
 
 router.post('/adoptAPet', userController.createPet, (req,res) => {
-  res.status(200).json({newPet: res.locals.createPet});
+  res.status(200).json(res.locals.addedItem);
 });
 
 

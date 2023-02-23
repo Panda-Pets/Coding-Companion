@@ -127,22 +127,64 @@ userController.gainCurrency = async (req, res, next) => {
 
 // this middleware adds new pet to the database
 userController.createPet = async (req, res, next) => {
-  const { petType, petName, user_id } = req.body;
+  console.log('has run');
+  const { petBreed, petName, user_id, firstPet, cost} = req.body;
+  let updatedCurrency;
   const size = Math.floor(Math.random() * 20) + 20;
   const happiness = Math.floor(Math.random() * 10) + 90;
   const age = Math.floor(Math.random() * 9) + 1;
-  const cost = 50;
-  const queryString = 'INSERT INTO unique_pets(name, size, happiness, age, cost, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
-  const values = [petName, size, happiness, age, cost, petType, user_id];
+  // const cost = 50;
+  const queryString = 'INSERT INTO unique_pets(name, size, happiness, age, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)';
+  const values = [petName, size, happiness, age, petBreed, user_id];
   try {
-    await db.query(queryString, values);
+    if(firstPet === false) {
+      // CORRECT:
+      //grab current currency in database
+      const queryStrCurrency = 'SELECT currency FROM users WHERE user_id = $1';
+      const values2 = [user_id];
+      const data = await db.query(queryStrCurrency, values2);
+      let currentCurrency = data.rows[0].currency;
+      //subtract that from cost of item
+      currentCurrency -= cost;
+
+      //update currency in database
+      const sqlStringUpdateCurrency = 'UPDATE users SET currency=$1 WHERE user_id = $2';
+      const values3 = [currentCurrency, user_id];
+      updatedCurrency = await db.query(sqlStringUpdateCurrency, values3);
+      console.log('updatedCurrency: ', updatedCurrency);
+    }
+    const addedItem = await db.query(queryString, values);
+    console.log('addedItem: ', addedItem);
+    res.locals.addedItem = [updatedCurrency, addedItem];
+    return next();
   } catch(err) {
     return next({
-      log: 'userController.createPet',
+      log: 'userController.createPet has encountered an error',
       message: err
     });
   }
 };
+// try {
+//   // update user currency
+
+//   // insert unique item
+//   const sqlStringAddInventory = 'INSERT INTO unique_items (cost, toy_stat, food_stat, type, file_id, user_id) VALUES ($1, $2, $3, $4, $5, $6)';
+//   const itemVals = Object.values(postConstructor);
+//   console.log('item vals: ', itemVals);
+//   const addedItem = await db.query(sqlStringAddInventory, itemVals);
+//   res.locals.addedItem = [updatedCurrency, addedItem];
+
+//   return next();
+// } catch (error) {
+//   console.log(error);
+//   const err = {
+//     log: 'userController.createPet has encountered an error',
+//     message: error,
+//   };
+//   console.error(error);
+//   next(err);
+// }
+
 // create a function that registers an admin user
 // userController.admin = (req, res, next) => {
 //   res.locals.adminProfile = 'success';
