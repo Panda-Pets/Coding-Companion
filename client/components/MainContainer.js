@@ -16,6 +16,8 @@ function MainContainer(props) {
   const [userInfo, setUserInfo] = useState(null);
   //keeps track of the signed in user's inventory including, backgrounds, pets, toys, foods
   const [userInventory, setUserInventory] = useState(null);
+
+  const [userPet, setUserPet] = useState(false);
   //will run whenever the state changes relating to when user is logged in
   useEffect(
     function () {
@@ -54,7 +56,7 @@ function MainContainer(props) {
 
   return (
     <div className="mainContainer">
-      {isLoggedIn && userInfo && userInventory ? (
+      {isLoggedIn && userInfo && userInventory && userPet ? (
         <Fragment>
           <ButtonWrapper handleClick={handleMenuClick} />
           <PopupDisplayWrapper
@@ -67,7 +69,7 @@ function MainContainer(props) {
           
         </Fragment>
       ) : (
-        <LoginWrapper setUserInfo={setUserInfo} setLoggedIn={setIsLoggedIn} />
+        <LoginWrapper setUserInfo={setUserInfo} setLoggedIn={setIsLoggedIn} setUserPet={setUserPet}/>
       )}
     </div>
   );
