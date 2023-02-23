@@ -26,9 +26,9 @@ function MainContainer(props) {
       //define anon async function
       async function getInventory() {
         //declare variable to be assiged to the async fetch request to get the logged in users inventory
-        let response = await fetch(`/inventory/${userInfo.currentUser.user_id}`);
+        const response = await fetch(`/inventory/${userInfo.currentUser.user_id}`);
         //decl var to be assigned to the returned async response
-        let inventory = await response.json();
+        const inventory = await response.json();
         //change state relating to user inventory
         setUserInventory(inventory);
       }

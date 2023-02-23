@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import Cat from '../../assets/images/pets/cat/cat_idle.gif';
 import Dog from '../../assets/images/pets/dog/dog_idle.gif';
@@ -37,10 +36,11 @@ function Store(props) {
   //a confirmed purchased var will store an array with the SQL query commands  
   const handlePurchase = (purchasedItem) => {
     async function purchaseFromStore() {
-      let response = await fetch(`/inventory/${userInfo.user_id}`, {method : 'POST',           headers: {
-        'Content-Type': 'application/json'
-      }, body: JSON.stringify(purchasedItem) });
-      let confirmedPurchase = await response.json();
+      const response = await fetch(`/inventory/${userInfo.user_id}`, 
+        {method : 'POST',           
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(purchasedItem) });
+      const confirmedPurchase = await response.json();
       console.log('confirmed purchase: ', confirmedPurchase);
       props.setUserCurrency(purchasedItem.currencyVal);
     }
@@ -50,7 +50,7 @@ function Store(props) {
       console.error(error);
     }
   };
-
+  console.log('storeItems: ',storeItems);
 
   const foodObj = {
     kibble: './Kibble.png',
@@ -60,7 +60,7 @@ function Store(props) {
     goatleg: './Goat Leg.png',
     livecow: './Cow.png'
   };
-  const foodItems = storeItems.toys.map((food, index) => 
+  const foodItems = storeItems.food.map((food, index) => 
   {
     const foodName = food.name;
     const foodCost = food.cost;
@@ -69,7 +69,7 @@ function Store(props) {
 		
     return (
       <section key={index}>
-        <img src={foods(image)} alt={`Image ${index}`} onClick={(foodName, foodCost) => handlePurchase(foodName, foodCost)}/>
+        <img src={foods(image)} alt={`Image ${index}`} onClick={() => handlePurchase(foodName, foodCost)}/>
         <p>{slicedImageName}</p>
         <p>cost: {foodCost} </p>
       </section>
@@ -85,14 +85,14 @@ function Store(props) {
     gallimimus: './Gallimimus.png'
   };
   //just to map and render all toys in the store
-  const toyItems = storeItems.food.map((toy, index) => {
+  const toyItems = storeItems.toys.map((toy, index) => {
     const toyName = toy.name;
     const toyCost = toy.cost;
     const image = toyObj[toyName];
     const slicedImageName = image.slice(2,-4);
 
     return (
-      <section key={index} onClick={(toyName, toyCost) => {
+      <section key={index} onClick={() => {
         const boughtItem = {
           currencyVal: userInfo.currency - toy.cost,
           cost: toy.cost,
@@ -123,7 +123,7 @@ function Store(props) {
     const petStr = `${petName[0].toUpperCase()}${petName.slice(1)}`;
     console.log(petName);
     return (
-      <section key={index} onClick={(petName) => handleClick(petName)}>
+      <section key={index} >
         <img src={image} alt={`Image ${index}`}/>
         <p>{petStr}</p>
         <p>cost: {petCost}</p>

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import Cat from '../../assets/images/pets/cat/cat_idle.gif';
 import Dog from '../../assets/images/pets/dog/dog_idle.gif';
@@ -14,7 +13,7 @@ const toys = require.context('../../assets/images/toys', false, /\.(png|jpe?g|sv
 function Inventory(props) {
   const { name, inventory } = props;
 
-  const handleClick = (item) => {
+  const handleDblClick = (item) => {
     //console.log('i\'ve been clicked! ', item);
 		
   };
@@ -63,7 +62,7 @@ function Inventory(props) {
     // console.log(image);
     const slicedImageName = image.slice(2,-4);
     return (
-      <section key={index} onClick={(toyName) => handleClick(toyName)}>
+      <section key={index} onClick={() => handleClick()}>
         <img src={toys(image)} alt={`Image ${index}`}/>
         <p>{slicedImageName}</p>
       </section>
@@ -75,7 +74,8 @@ function Inventory(props) {
     dog: Dog,
     trex: Trex
   };
-
+  // console.log(inventory.pets);
+  console.log('inventory.pets: ', inventory.pets);
   const petItems = inventory.pets.map((pet, index) => {
     const petName = pet.file_id;
     const image = petObj[petName];
