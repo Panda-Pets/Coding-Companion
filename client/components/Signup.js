@@ -30,15 +30,18 @@ function Signup (props) {
           return;
         }
         props.setUserInfo(userData);
+        props.setLoggedIn(true);
+        props.setLoginState('CreatePet');
     }
-
+  // TODO: Comment this back in!
   function checkPassword (password) {
-    const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    return regex.test(password);
+    // const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    // return regex.test(password);
+    return true;
   }
 
   function formSwitchHandler (e) {
-    props.setUserIsLoggingIn(true);
+    props.setLoginState('Login');
   }
 
     return (

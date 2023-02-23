@@ -8,13 +8,15 @@
     "build": "NODE_ENV=production webpack",
     "dev": "concurrently \"NODE_ENV=development webpack serve --open\" \"NODE_ENV=development nodemon ./server/server.js\"",
     "front": "NODE_ENV=development webpack serve --open",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint './**/*.{ts,tsx,js,jsx}'",
+    "lint-and-fix": "eslint './**/*.{ts,tsx,js,jsx}' --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/The-Goblin-Sharks/Coding-Companion.git"
   },
-  "author": "Easton Miller, Ian Davis, Steven Min, Thomas Kady, Yohan Jeon",
+  "author": "Easton Miller, Ian Davis, Thomas Kady, Yohan Jeon, Steven Min, Keely Timms, Anthony Vega, Lennon Stewart",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/The-Goblin-Sharks/Coding-Companion/issues"
@@ -30,6 +32,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "css-loader": "^6.7.3",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
