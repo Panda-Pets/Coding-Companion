@@ -35,7 +35,8 @@ function Store(props) {
   //send along in request body the purchasedItem props
   //a confirmed purchased var will store an array with the SQL query commands  
   const handlePurchase = (purchasedItem) => {
-    async function purchaseFromStore() {
+    console.log('purchasedItem ',purchasedItem);
+    async function purchaseFoodOrToy() {
       const response = await fetch(`/inventory/${userInfo.user_id}`, 
         {method : 'POST',           
           headers: { 'Content-Type': 'application/json' },
@@ -44,8 +45,20 @@ function Store(props) {
       console.log('confirmed purchase: ', confirmedPurchase);
       props.setUserCurrency(purchasedItem.currencyVal);
     }
+
+    async function purchasePet() {
+      console.log('PURCHASE PET');
+      const response = await fetch('/user/adoptAPet', 
+        {method : 'POST',           
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(purchasedItem) });
+      const confirmedPurchase = await response.json();
+      console.log('confirmed purchase: ', confirmedPurchase);
+      props.setUserCurrency(purchasedItem.currencyVal);
+    }
     try{
-      purchaseFromStore();
+      if(purchasedItem.type === 'pet') purchasePet();
+      else purchaseFoodOrToy();
     } catch (error) {
       console.error(error);
     }
@@ -66,9 +79,19 @@ function Store(props) {
     const foodCost = food.cost;
     const image = foodObj[foodName];
     const slicedImageName = image.slice(2,-4);
-		
     return (
-      <section key={index}>
+      <section key={index} onClick={() => {
+        const boughtItem = {
+          currencyVal: userInfo.currency - food.cost,
+          cost: food.cost,
+          toy_stat: 0,
+          food_stat: food.stat,
+          type: 'food',
+          file_id: food.name,
+          user_id: userInfo.user_id
+        };
+        handlePurchase(boughtItem);
+      }}>
         <img src={foods(image)} alt={`Image ${index}`} onClick={() => handlePurchase(foodName, foodCost)}/>
         <p>{slicedImageName}</p>
         <p>cost: {foodCost} </p>
@@ -90,7 +113,6 @@ function Store(props) {
     const toyCost = toy.cost;
     const image = toyObj[toyName];
     const slicedImageName = image.slice(2,-4);
-
     return (
       <section key={index} onClick={() => {
         const boughtItem = {
@@ -117,13 +139,27 @@ function Store(props) {
   };
 	
   const petItems = storeItems.pets.map((pet, index) => {
-    const petName = pet.file_id;
+    const petBreed = pet.file_id;
+    const petType = pet.type;
     const petCost = pet.cost;
-    const image = petObj[petName];
-    const petStr = `${petName[0].toUpperCase()}${petName.slice(1)}`;
-    console.log(petName);
+    const image = petObj[petBreed];
+    const petStr = `${petBreed[0].toUpperCase()}${petBreed.slice(1)}`;
+    console.log('PET: ',pet);
+
+    //TODO: implement functionality to name pet. defaulted to Steve atm
     return (
-      <section key={index} >
+      <section key={index} onClick={() => {
+        const boughtItem = {
+          currencyVal: userInfo.currency - pet.cost,
+          petName: 'Steve',
+          cost: pet.cost,
+          petBreed: petBreed,
+          type: pet.type,
+          user_id: userInfo.user_id,
+          firstPet: false
+        };
+        handlePurchase(boughtItem);
+      }}>
         <img src={image} alt={`Image ${index}`}/>
         <p>{petStr}</p>
         <p>cost: {petCost}</p>
