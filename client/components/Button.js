@@ -6,8 +6,8 @@ import '../styles/Button.css';
 
 function Button(props) {
   const { name, handleClick } = props;
-  console.log('name', name);
-  console.log('handleClick', handleClick);
+  // console.log('name', name);
+  // console.log('handleClick', handleClick);
   return(
     <button value={name} id={`${name}`} className="button" onClick={handleClick}>{name}</button>
   ); 
