@@ -16,8 +16,11 @@ function MainContainer(props) {
   const [userInfo, setUserInfo] = useState(null);
   //keeps track of the signed in user's inventory including, backgrounds, pets, toys, foods
   const [userInventory, setUserInventory] = useState(null);
+  // keeps track of whether or not each pet is showing
+  const [petsShowing, setPetsShowing] = useState(null);
 
   const [userPet, setUserPet] = useState(false);
+
   //will run whenever the state changes relating to when user is logged in
   useEffect(
     function () {
@@ -31,6 +34,10 @@ function MainContainer(props) {
         const inventory = await response.json();
         //change state relating to user inventory
         setUserInventory(inventory);
+        // populate petsShowing, initially all true
+        const pets = {};
+        inventory.pets.forEach((pet) => (pets[pet.unique_pet_id] = true));
+        setPetsShowing(pets);
       }
       //try and catch block - invoke async func above
       try {
@@ -54,6 +61,13 @@ function MainContainer(props) {
     }
   };
 
+  const handleMenuPetClick = (pet_id) => {
+    console.log('Pet_id: ', pet_id);
+    setPetsShowing({ ...petsShowing, [pet_id]: !petsShowing[pet_id] });
+  };
+
+  console.log('USER INVENTORY:', userInventory);
+
   return (
     <div className="mainContainer">
       {isLoggedIn && userInfo && userInventory && userPet ? (
@@ -63,13 +77,18 @@ function MainContainer(props) {
             userInfo={userInfo}
             popupToRender={popupToRender}
             userInventory={userInventory}
+            handleMenuPetClick={handleMenuPetClick}
           />
-          <Pet userInventory={userInventory} />
-          {/* <Pet userInventory={userInventory} /> */}
-          
+          {userInventory.pets.map((pet) => (
+            <Pet pet={pet} key={pet.unique_pet_id} visible={petsShowing[pet.unique_pet_id]} />
+          ))}
         </Fragment>
       ) : (
-        <LoginWrapper setUserInfo={setUserInfo} setLoggedIn={setIsLoggedIn} setUserPet={setUserPet}/>
+        <LoginWrapper
+          setUserInfo={setUserInfo}
+          setLoggedIn={setIsLoggedIn}
+          setUserPet={setUserPet}
+        />
       )}
     </div>
   );
