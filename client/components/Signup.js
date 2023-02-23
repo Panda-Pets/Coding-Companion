@@ -30,6 +30,7 @@ function Signup (props) {
           return;
         }
         props.setUserInfo(userData);
+        props.setLoggedIn(true);
         props.setLoginState('CreatePet');
     }
   // TODO: Comment this back in!

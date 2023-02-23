@@ -1,0 +1,10 @@
+.adoptPetOption {
+  height: 170px;
+  width: 170px;
+}
+
+.adoptPetBox {
+  display: inline-flex;
+  justify-content: center;
+  gap: 50px;
+}
