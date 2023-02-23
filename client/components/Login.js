@@ -10,7 +10,14 @@ function Login(props) {
 
   const submitFormHandler = async(e) => {
     e.preventDefault();
-    const data = await fetch(`/user/login/${username}&${password}`);
+    // const data = await fetch(`/user/login/${username}&${password}`);
+    const data = await fetch('/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({username, password})
+    });
     const userData = await data.json();
     if (userData.err) {
       setErrorMessage(userData.err);
@@ -18,10 +25,11 @@ function Login(props) {
     }
     props.setUserInfo(userData);
     props.setLoggedIn(true);
+    props.setUserPet(true);
   }
 
   const formSwitchHandler = e => {
-    props.setUserIsLoggingIn(false);
+    props.setLoginState('Signup');
   }
 
   return <form className='loginForm' onSubmit={submitFormHandler}>

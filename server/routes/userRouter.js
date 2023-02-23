@@ -4,7 +4,7 @@ const userController = require('../controllers/userControllers.js');
 const leetcodeController = require('../controllers/leetcodeController');
 
 
-router.get('/login/:username&:password', userController.login, leetcodeController.getUpdatedStats, userController.updateStats, userController.gainCurrency, (req, res) => {
+router.post('/login/', userController.login, leetcodeController.getUpdatedStats, userController.updateStats, userController.gainCurrency, (req, res) => {
   res.status(200).json({problemDiff : res.locals.problemDiff, currentUser : res.locals.currentUser, gainedCurrency : res.locals.gainedCurrency});
   // send gained currency, send problemdiff, send updated userinfo
 });

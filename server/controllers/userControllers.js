@@ -39,7 +39,7 @@ userController.signup = async (req, res, next) => {
 //checks the login information to the saved info in the user database
 userController.login = async (req, res, next) => {
   try {
-    const {username, password} = req.params;
+    const { username, password } = req.body;
     const usernameCheckValue = [username];
     const usernameCheckQuery = 'SELECT * FROM users WHERE users.username = $1;';
     const user = await db.query(usernameCheckQuery, usernameCheckValue);
