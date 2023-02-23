@@ -13,7 +13,15 @@ function Pet(props) {
   const [petScale, setPetScale] = useState(100);
   const [petMoveState, setPetMoveState] = useState(false);
   const [flipPet, setFlipPet] = useState(false);
+
+  //change this to petsActive SQL ? 
   const [pet, setPet] = useState(props.userInventory.pets[0].file_id);
+
+  // const [showPet, setShowPet] = useState(false);
+
+
+//create state var to use as switch var 
+ 
 
   //objects to make conditional rendering and correct css easier to impliment
   const petGifPairs = {
@@ -83,15 +91,10 @@ function Pet(props) {
     if(pet === 'trex') setPet('cat');
     if(pet === 'cat') setPet('dog');
   };
-	const handlePetDoubleClick = () => {
-		const [pet2XPosition, setPet2XPosition] = useState(30);
-  		const [pet2YPosition, setPet2YPosition] = useState(30);
-  		const [pet2Scale, setPet2Scale] = useState(100);
-  		const [pet2MoveState, setPet2MoveState] = useState(false);
-  		const [flipPet2, setFlipPet2] = useState(false);
-  		const [pet2, setPet2] = useState(props.userInventory.pets[0].file_id);
+// 	const handlePetDoubleClick = () => {
+// 		setShowPet(true);
 
- }
+//  }
   //create newPet function 
   //initi new pet coordinates 
 
@@ -100,7 +103,7 @@ function Pet(props) {
     <div 
       className="petStyle" 
       onClick={handlePetClick}
-	  onDoubleClick={handlePetDoubleClick}
+	  // onDoubleClick={handlePetDoubleClick}
       style={
         {
           top: `${petYPosition}%`, 
@@ -118,16 +121,16 @@ function Pet(props) {
           }
         }/>
 
-		<img 
+		{/* <img 
         src={petMoveState ? petGifPairs[pet] : idleGifPairs[pet]} 
         alt={pet}
-        className={flipPet ? 'walkingLeft' : ''} 
+        className={`secondPet ${showPet ? 'visible' : ''}`} 
         style={
           {
             height: `75px`,
             width: `75px`,
           }
-        }/>
+        }/> */}
 		
     </div>
   ); 
